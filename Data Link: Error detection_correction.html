@@ -1,3 +1,143 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html><head><link rel="stylesheet" type="text/css" href="sitewide.css"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="exporter-version" content="Evernote Mac 7.0.3 (456341)"/><meta name="altitude" content="-0.2788804769515991"/><meta name="author" content="Alex Balgavy"/><meta name="created" content="2018-03-24 14:20:23 +0000"/><meta name="latitude" content="52.37311990444763"/><meta name="longitude" content="4.836070196453754"/><meta name="source" content="desktop.mac"/><meta name="updated" content="2018-03-24 14:20:45 +0000"/><title>Data Link: Error detection/correction</title></head><body><div><span style="font-weight: bold;">Errors</span></div><ul><li>errors can be caused by hardware or software</li><li>timer that expires if frame not acknowledged, then frame is resent</li><li>flow control is feedback-based (receiver sends permission to sender for more data), or rate-based (built-in data send rate limiter)</li></ul><div><br/></div><div>Error detection</div><ul><li>adds enough redundancy so that receiver can detect error and request retransmission, used on highly reliable networks like fiber</li><li>a codeword is n-bit unit with m data bits and r check bits</li></ul><ul><li>parity bit</li><ul><li>add a single bit to the end to make the number of 1s even</li><li>a code with a single parity bit can detect single-bit errors</li><li>however, not good with burst errors</li><li>to improve, interleave — compute parity in order different from transmission order:</li></ul></ul><div><br/></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><img src="Data%20Link%3A%20Error%20detection_correction.resources/screenshot_1.png" height="239" width="402"/></div><div><br/></div></blockquote></blockquote><ul><li>checksums</li><ul><li>16-bit Internet checksum — sum of message bits divided into 16-bit words</li><li>Fletcher’s checksum — adds product of data and its position to running sum</li><li>improved error detection over parity</li><li>detects bursts up to N errors</li><li>does not detect systematic fuckups</li></ul><li>Cyclic redundancy check</li><ul><li>based on treating bit strings as polynomials with coefficients of only 0 and 1</li><li>polynomial eg. ×<span style="vertical-align: super; font-size: smaller; font-size: smaller;">32</span> + x<span style="vertical-align: super; font-size: smaller; font-size: smaller;">16</span> + x<span style="vertical-align: super; font-size: smaller; font-size: smaller;">8</span>+×<span style="vertical-align: super; font-size: smaller; font-size: smaller;">1</span> + 1</li><li>sender and receiver agree on generator polynomial G(x) in advance, with both high- and low-order bits at 1</li><li>append a CRC to end of frame so that polynomial represented is divisible by G(x)</li><li>algorithm to send, with generator G(x):</li><ol><li>r is degree of G(x) — append r zero bits to end of frame so it now has m+r bits</li><li>divide bit string G(x) into bit string from step 1 with long division (subtracting is mod 2, simply XOR)</li><li>subtract remainder from bit string in step 1 using mod 2 subtraction, result is checksummed frame to transmit</li></ol><li>when received, checks if frame is divisible by G(x). if not, the remainder is the error (E(x)/G(x))</li></ul></ul><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><br/></div></blockquote></blockquote><div>Error correction</div><ul><li>adds enough redundancy to be able to correct errors, used on unreliable networks like 802.11</li><li>Hamming distance</li><ul><li>shortest distance to change one string into another</li><li>compute: XOR two bit strings and count number of ones in result</li><li>with Hamming distance d, you can detect d-1 errors</li></ul><li>Hamming codes (<a href="https://youtu.be/373FUw-2U2k">video</a>)</li><ul><li>if Hamming distance n, we can correct (h-1)/2 errors</li><li>bits of codeword are numbered, with 1 at very left</li><li>at powers of 2 are check bits, others are data</li><li>sender:</li></ul><ol><ol><li>expand locations into powers of 2</li><li>decide Value of check bit in location 2<span style="vertical-align: super; font-size: smaller; font-size: smaller;">i</span> by mod 2 adding all bits with 2<span style="vertical-align: super; font-size: smaller; font-size: smaller;">i</span> in expansion</li></ol></ol><ul><li>receiver:</li></ul></ul><ol><ol><ol><li>Redo all bit computations</li><li>For even parity, each check result should be zero. If not, an error has been detected.</li></ol><ul><ul><li>check bits for whole message are error syndrome</li><li>convert to decimal n, then nth bit is error</li></ul></ul></ol></ol><div><br/></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><img src="Data%20Link%3A%20Error%20detection_correction.resources/screenshot_2.png" height="179" width="595"/></div></blockquote></blockquote><ul><li>Convolutional code</li><ul><li>encoder processes input bits &amp; generates output bits</li><li>output depend's on current and previous input bits (constraint length)</li><li>encoder has memory, e.g. in six registers</li><li>e.g. NASA r=1/2 and k=7 (also in 802.11) — each input bit on left side produces two output bits that are XOR sums of input and internal state:</li></ul></ul><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><img src="Data%20Link%3A%20Error%20detection_correction.resources/screenshot.png" height="199" width="415"/></div></blockquote></blockquote><div><br/></div></body></html>
+<html>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="sitewide.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="exporter-version" content="Evernote Mac 7.0.3 (456341)" />
+  <meta name="altitude" content="-0.2788804769515991" />
+  <meta name="author" content="Alex Balgavy" />
+  <meta name="created" content="2018-03-24 14:20:23 +0000" />
+  <meta name="latitude" content="52.37311990444763" />
+  <meta name="longitude" content="4.836070196453754" />
+  <meta name="source" content="desktop.mac" />
+  <meta name="updated" content="2018-03-24 14:20:45 +0000" />
+  <title>Data Link: Error detection/correction</title>
+</head>
+
+<body>
+  <div><span style="font-weight: bold;">Errors</span></div>
+  <ul>
+    <li>errors can be caused by hardware or software</li>
+    <li>timer that expires if frame not acknowledged, then frame is resent</li>
+    <li>flow control is feedback-based (receiver sends permission to sender for more data), or rate-based (built-in data send rate limiter)</li>
+  </ul>
+  <div><br/></div>
+  <div>Error detection</div>
+  <ul>
+    <li>adds enough redundancy so that receiver can detect error and request retransmission, used on highly reliable networks like fiber</li>
+    <li>a codeword is n-bit unit with m data bits and r check bits</li>
+  </ul>
+  <ul>
+    <li>parity bit</li>
+    <ul>
+      <li>add a single bit to the end to make the number of 1s even</li>
+      <li>a code with a single parity bit can detect single-bit errors</li>
+      <li>however, not good with burst errors</li>
+      <li>to improve, interleave — compute parity in order different from transmission order:</li>
+    </ul>
+  </ul>
+  <div><br/></div>
+  <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+    <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+      <div><img src="Data%20Link%3A%20Error%20detection_correction.resources/screenshot_1.png" height="239" width="402" /></div>
+      <div><br/></div>
+    </blockquote>
+  </blockquote>
+  <ul>
+    <li>checksums</li>
+    <ul>
+      <li>16-bit Internet checksum — sum of message bits divided into 16-bit words</li>
+      <li>Fletcher’s checksum — adds product of data and its position to running sum</li>
+      <li>improved error detection over parity</li>
+      <li>detects bursts up to N errors</li>
+      <li>does not detect systematic fuckups</li>
+    </ul>
+    <li>Cyclic redundancy check</li>
+    <ul>
+      <li>based on treating bit strings as polynomials with coefficients of only 0 and 1</li>
+      <li>polynomial eg. ×<span style="vertical-align: super; font-size: smaller; font-size: smaller;">32</span> + x<span style="vertical-align: super; font-size: smaller; font-size: smaller;">16</span> + x<span style="vertical-align: super; font-size: smaller; font-size: smaller;">8</span>+×
+        <span
+          style="vertical-align: super; font-size: smaller; font-size: smaller;">1</span> + 1</li>
+      <li>sender and receiver agree on generator polynomial G(x) in advance, with both high- and low-order bits at 1</li>
+      <li>append a CRC to end of frame so that polynomial represented is divisible by G(x)</li>
+      <li>algorithm to send, with generator G(x):</li>
+      <ol>
+        <li>r is degree of G(x) — append r zero bits to end of frame so it now has m+r bits</li>
+        <li>divide bit string G(x) into bit string from step 1 with long division (subtracting is mod 2, simply XOR)</li>
+        <li>subtract remainder from bit string in step 1 using mod 2 subtraction, result is checksummed frame to transmit</li>
+      </ol>
+      <li>when received, checks if frame is divisible by G(x). if not, the remainder is the error (E(x)/G(x))</li>
+    </ul>
+  </ul>
+  <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+    <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+      <div><br/></div>
+    </blockquote>
+  </blockquote>
+  <div>Error correction</div>
+  <ul>
+    <li>adds enough redundancy to be able to correct errors, used on unreliable networks like 802.11</li>
+    <li>Hamming distance</li>
+    <ul>
+      <li>shortest distance to change one string into another</li>
+      <li>compute: XOR two bit strings and count number of ones in result</li>
+      <li>with Hamming distance d, you can detect d-1 errors</li>
+    </ul>
+    <li>Hamming codes (<a href="https://youtu.be/373FUw-2U2k">video</a>)</li>
+    <ul>
+      <li>if Hamming distance n, we can correct (h-1)/2 errors</li>
+      <li>bits of codeword are numbered, with 1 at very left</li>
+      <li>at powers of 2 are check bits, others are data</li>
+      <li>sender:</li>
+    </ul>
+    <ol>
+      <ol>
+        <li>expand locations into powers of 2</li>
+        <li>decide Value of check bit in location 2<span style="vertical-align: super; font-size: smaller; font-size: smaller;">i</span> by mod 2 adding all bits with 2<span style="vertical-align: super; font-size: smaller; font-size: smaller;">i</span> in
+          expansion</li>
+      </ol>
+    </ol>
+    <ul>
+      <li>receiver:</li>
+    </ul>
+  </ul>
+  <ol>
+    <ol>
+      <ol>
+        <li>Recompute all check bits</li>
+        <li>For even parity, if you XOR received check bits and computed check bits, result should be 0. If it's not, something's wrong. Could be you. But could be (and probably is) an error in the transmission.</li>
+      </ol>
+      <ul>
+        <ul>
+          <li>write the recomputed check bits in reverse, that's the syndrome</li>
+          <li>convert the syndrome to decimal, that's where the error is</li>
+        </ul>
+      </ul>
+    </ol>
+  </ol>
+  <div><br/></div>
+  <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+    <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+      <div><img src="Data%20Link%3A%20Error%20detection_correction.resources/screenshot_2.png" height="179" width="595" /></div>
+    </blockquote>
+  </blockquote>
+  <ul>
+    <li>Convolutional code</li>
+    <ul>
+      <li>encoder processes input bits &amp; generates output bits</li>
+      <li>output depend's on current and previous input bits (constraint length)</li>
+      <li>encoder has memory, e.g. in six registers</li>
+      <li>e.g. NASA r=1/2 and k=7 (also in 802.11) — each input bit on left side produces two output bits that are XOR sums of input and internal state:</li>
+    </ul>
+  </ul>
+  <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+    <blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;">
+      <div><img src="Data%20Link%3A%20Error%20detection_correction.resources/screenshot.png" height="199" width="415" /></div>
+    </blockquote>
+  </blockquote>
+  <div><br/></div>
+</body>
+
+</html>
