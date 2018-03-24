@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head><link rel="stylesheet" type="text/css" href="sitewide.css"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/><meta name="exporter-version" content="Evernote Mac 7.0.3 (456341)"/><meta name="altitude" content="-0.01739152707159519"/><meta name="author" content="Alex Balgavy"/><meta name="created" content="2018-03-24 14:26:17 +0000"/><meta name="latitude" content="52.37311177241411"/><meta name="longitude" content="4.836059346787849"/><meta name="source" content="desktop.mac"/><meta name="updated" content="2018-03-24 14:26:25 +0000"/><title>Transport: internet transport protocols</title></head><body><div><span style="font-weight: bold;">Internet transport protocols</span></div><div>UDP (User Datagram Protocol)</div><div
+/><ul><div
+/><li><span style="font-size: 14px; font-family: &quot;Helvetica Neue&quot;;">very thin layer on top of IP</span></li><div
+/><li><span style="font-size: 14px; font-family: &quot;Helvetica Neue&quot;;">provides: ports</span></li><div
+/><li><span style="font-size: 14px; font-family: &quot;Helvetica Neue&quot;;">does not provide: flow/congestion control, retransmissions</span></li><div
+/><li><span style="font-size: 14px; font-family: &quot;Helvetica Neue&quot;;">header format:</span></li><div
+/></ul><div
+/><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div
+/><div><img src="Transport%3A%20internet%20transport%20protocols.resources/screenshot_2.png" height="145" width="853"/></div><div
+/></blockquote><div
+/><div><br/></div><div
+/><div><span style="font-family: &quot;Helvetica Neue&quot;;">TCP (Transmission Control Protocol)</span></div><div
+/><ul><div
+/><li><span style="font-family: &quot;Helvetica Neue&quot;;">provides reliable end-to-end byte stream (so applications can’t tell how many segments or packets were sent)</span></li><div
+/><li><span style="font-size: 14px; font-family: &quot;Helvetica Neue&quot;;">header format:</span></li><div
+/></ul><div
+/><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div
+/><div
+/><div><img src="Transport%3A%20internet%20transport%20protocols.resources/screenshot.png" height="398" width="837"/></div><div><br/></div></blockquote><ul><li><span style="font-size: 14px; font-family: &quot;Helvetica Neue&quot;;">every data byte has its own sequence number</span></li><li><span style="font-family: &quot;Helvetica Neue&quot;;">window size — how much data receiver can handle, with small values leading to huge overhead</span></li><li><span style="font-family: &quot;Helvetica Neue&quot;;">congestion control</span></li><ul><li><span style="font-family: &quot;Helvetica Neue&quot;;">congestion window is on sender, specifying how many segments can be transmitted. </span></li><li><span style="font-family: &quot;Helvetica Neue&quot;;">increase congestion window whenever ACKs arrive, until they don’t.</span></li><li><span style="font-family: &quot;Helvetica Neue&quot;;">then set slow start threshold to half of congestion window and start again.</span></li><li><span style="font-family: &quot;Helvetica Neue&quot;;">when threshold is crossed, switch to additive increase</span></li></ul><li><span style="font-family: &quot;Helvetica Neue&quot;;">fast retransmission — three duplicate acks imply lost packet, whose identity can be infered from ack number (it’s the next packet in sequence). this packet is retransmitted right away</span></li><li><span style="font-family: &quot;Helvetica Neue&quot;;">in TCP Reno:</span></li></ul><div><br/></div><blockquote style="margin: 0 0 0 40px; border: none; padding: 0px;"><div><img src="Transport%3A%20internet%20transport%20protocols.resources/screenshot_1.png" height="329" width="689"/></div></blockquote><div><br/></div></body></html>
