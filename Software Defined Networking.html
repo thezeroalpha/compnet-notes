@@ -1,0 +1,401 @@
+<html>
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
+    <script type="text/javascript" async src="https://cdn.jsdelivr.net/gh/mathjax/MathJax@2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/default.min.css">
+    <link rel="Stylesheet" type="text/css" href="/sitewide.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('pre.code').forEach(function(item) {
+          hljs.highlightBlock(item)
+        })
+      });
+    </script>
+    <title>Software Defined Networking</title>
+</head>
+<body>
+<style type="text/css">
+nav a {
+    text-align: left;
+}
+nav #name {
+    text-align: right;
+    float: right;
+    font-style: italic;
+}
+</style>
+    <nav>
+    <a href="index.html">Index</a>
+    <span id="name">Alex Balgavy</span>
+    </nav>
+    <hr>
+    <div class="content">
+    
+<div id="Software Defined Networking"><h1 id="Software Defined Networking" class="header"><a href="#Software Defined Networking">Software Defined Networking</a></h1></div>
+<p>
+A guest lecture by Lin Wang on Thu Jun 20, 2019
+</p>
+
+<p>
+feedback: bit.ly/vu-cn2019-sdn
+</p>
+
+<div id="Software Defined Networking-Basics of Layer 2"><h2 id="Basics of Layer 2" class="header"><a href="#Software Defined Networking-Basics of Layer 2">Basics of Layer 2</a></h2></div>
+<p>
+a router has line cards connected to a switching fabric (data plane), and a processor (control plane).
+line cards are the interfaces.
+the control plane computes the path that packets will follow (e.g. OSPF - run Dijkstra on topology).
+also takes care of e.g. traffic engineering (link weights to change path)
+</p>
+
+<p>
+"control plane of a network is a complicated mess"
+</p>
+
+<p>
+example: access control - drop packets from IP address you don't want to allow.
+but what if you add a link? well you might be able to find a new path that bypasses access control.
+</p>
+
+<p>
+there are people who understand this complicated mess.
+the ability to master complexity is valuable, but not the same as the ability to extract simplicity.
+</p>
+
+<p>
+the control plane has variety of goals, but no modularity.
+it's a mechanism without abstraction.
+that's why you feel like computer networks is just acronym soup.
+</p>
+
+<div id="Software Defined Networking-SDN to the rescue"><h2 id="SDN to the rescue" class="header"><a href="#Software Defined Networking-SDN to the rescue">SDN to the rescue</a></h2></div>
+<p>
+the answer is software defined networking: a network in which the control plane is physically separate from the day plane.
+a single (logically centralized) control plane controls several forwarding devices.
+you have an overarching network OS that controls the devices. that way you take the intelligence out of the devices.
+</p>
+
+<div id="Software Defined Networking-SDN to the rescue-Abstractions in SDN"><h3 id="Abstractions in SDN" class="header"><a href="#Software Defined Networking-SDN to the rescue-Abstractions in SDN">Abstractions in SDN</a></h3></div>
+<ol>
+<li>
+Forwarding abstraction:
+
+<ul>
+<li>
+express intent - independence of implementation. don't want proprietary hw/sw
+
+<li>
+openflow is currently proposed for forwarding
+
+<ul>
+<li>
+standardised interface to switch
+
+<li>
+config in terms of flow entries - &lt;header, action&gt;
+
+</ul>
+<li>
+design details concern exact nature of header matching &amp; allowed actions
+
+<li>
+important facets:
+
+<ul>
+<li>
+switches accept external control messages (not closed/proprietary)
+
+<li>
+standardised flow entry format (switches are interchangeable)
+
+</ul>
+</ul>
+<li>
+Network state abstraction
+
+<ul>
+<li>
+something from the slides that I missed
+
+<li>
+centralised link-state algorithm
+
+<li>
+switches send connectivity info to controller
+
+<li>
+controller computes forwarding state
+
+<li>
+controller sends forwarding state to routers
+
+</ul>
+<li>
+Specification abstraction
+
+<ul>
+<li>
+control mechanism expresses desired behavior - what you want to do instead of how it'll be done
+
+<li>
+should not be responsible for implementing that behavior on physical network infrastructure
+
+<li>
+proposed abstraction - abstract view of the network
+
+</ul>
+</ol>
+
+<p>
+There's a clear separation of concerns:
+</p>
+<ul>
+<li>
+Control program: express goals on abstract view (driven by operator requirements)
+
+<li>
+<a href="Virtualisation.html">Virtualisation</a> layer: abstract view &lt;&gt; global view (driven by spec abstraction for particular task)
+
+<li>
+Network SO: global view &lt;&gt; physical switches (API provided by network state abstraction, switch interface driven by forwarding abstraction)
+
+</ul>
+
+<div id="Software Defined Networking-SDN to the rescue-Does SDN simplify the network?"><h3 id="Does SDN simplify the network?" class="header"><a href="#Software Defined Networking-SDN to the rescue-Does SDN simplify the network?">Does SDN simplify the network?</a></h3></div>
+<ul>
+<li>
+Abstraction does not eliminate complexity
+
+<li>
+But it localises complexity and pushes it into reusable code
+
+</ul>
+
+<div id="Software Defined Networking-SDN to the rescue-Why is SDN only happening now?"><h3 id="Why is SDN only happening now?" class="header"><a href="#Software Defined Networking-SDN to the rescue-Why is SDN only happening now?">Why is SDN only happening now?</a></h3></div>
+<ul>
+<li>
+the idea was there for a long time (active networking in 1990s, control/data plane separation in early 200s)
+
+<li>
+in 2008, you got openflow API and network OSes
+
+<li>
+main reasons:
+
+<ul>
+<li>
+operators face challenges with network management, cost conscious &amp; desire a lot of control
+
+<li>
+SDN is right balance between vision and pragmatism
+
+<li>
+you get network virtualisation
+
+</ul>
+</ul>
+
+<div id="Software Defined Networking-OpenFlow basics"><h2 id="OpenFlow basics" class="header"><a href="#Software Defined Networking-OpenFlow basics">OpenFlow basics</a></h2></div>
+<p>
+provides abstraction for forwarding plane. the devices maintain a flow table, which they get from the network OS via the openflow protocol.
+</p>
+
+<p>
+match arbitrary bits in headers, on any header, or new header. allows any flow granularity.
+then action - forward to ports, drop, send to controller, overwrite header with mask, forward at specific bitrate.
+</p>
+
+<div id="Software Defined Networking-The practical part"><h2 id="The practical part" class="header"><a href="#Software Defined Networking-The practical part">The practical part</a></h2></div>
+<div id="Software Defined Networking-The practical part-Using Mininet"><h3 id="Using Mininet" class="header"><a href="#Software Defined Networking-The practical part-Using Mininet">Using Mininet</a></h3></div>
+<p>
+create a topology of two nodes and one switch: <code>sudo mn --topo=single,2</code>
+</p>
+
+<pre>
+               ┌──────────────────┐
+               │                  │
+               │                  │
+               │      Switch      │
+               │                  │
+               └───┬─────────┬────┘
+                 ┌─┘         └─┐
+               ┌─┘             └─┐
+             ┌─┘                 └─┐
+           ┌─┘                     └─┐
+          ┌┘                         └─┐
+         ┌┘                            └┐
+┌────────┴─────────┐         ┌──────────┴───────┐
+│                  │         │                  │
+│                  │         │                  │
+│      Host 1      │         │      Host 2      │
+│                  │         │                  │
+└──────────────────┘         └──────────────────┘
+</pre>
+
+<p>
+test the connection: <code>h1 ping -c 5 h2</code>
+new window for h2: <code>xterm h2</code>
+in that new window, display ARP packets: <code>tcpdump -n -i h2-eth0 arp</code>
+</p>
+
+<p>
+result:
+</p>
+
+<pre class="code">
+listening on h2-eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+15:55:31.898660 ARP, Request who-has 10.0.0.2 tell 10.0.0.1, length 28
+15:55:31.898682 ARP, Reply 10.0.0.2 is-at 9a:dc:b4:93:3d:43, length 28
+15:55:36.913187 ARP, Request who-has 10.0.0.1 tell 10.0.0.2, length 28
+15:55:36.915364 ARP, Reply 10.0.0.1 is-at 12:53:58:dc:5a:96, length 28
+</pre>
+
+
+<div id="Software Defined Networking-Programming with Mininet"><h2 id="Programming with Mininet" class="header"><a href="#Software Defined Networking-Programming with Mininet">Programming with Mininet</a></h2></div>
+<p>
+creating a broken rectangle network topology with Python
+</p>
+
+<pre>
+┌─────────────┐        ┌─────────────┐        ┌─────────────┐      ┌─────────────┐
+│             │        │             │        │             │      │             │
+│  Host 1     ├────────┤  Switch 1   ├────────┤  Switch 2   ├──────┤  Host 2     │
+│             │        │             │        │             │      │             │
+└─────────────┘        └─────────────┘        └─────┬───────┘      └─────────────┘
+                                                    │
+                                                    │
+┌─────────────┐        ┌─────────────┐        ┌─────┴───────┐      ┌─────────────┐
+│             │        │             │        │             │      │             │
+│  Host 4     ├────────┤  Switch 4   ├────────┤  Switch 3   ├──────┤  Host 3     │
+│             │        │             │        │             │      │             │
+└─────────────┘        └─────────────┘        └─────────────┘      └─────────────┘
+</pre>
+
+<p>
+Write this and save it as <code>brectangle.py</code>.
+</p>
+
+<pre class="code lang-python">
+
+from mininet.topo import Topo
+from mininet.net import Mininet
+from mininet.node import OVSSwitch, Controller, RemoteController
+
+class RectTopo(Topo):
+    def __init__(self):
+        Topo.__init__(self)
+        h1 = self.addHost('h1')
+        h2 = self.addHost('h2')
+        h3 = self.addHost('h3')
+        h4 = self.addHost('h4')
+
+        s1 = self.addSwitch('s1')
+        s2 = self.addSwitch('s2')
+        s3 = self.addSwitch('s3')
+        s4 = self.addSwitch('s4')
+
+        self.addLink(h1, s1)
+        self.addLink(h2, s2)
+        self.addLink(h3, s3)
+        self.addLink(h4, s4)
+
+        self.addLink(s1, s2)
+        self.addLink(s2, s3)
+        self.addLink(s3, s4)
+
+topos = { 'recttopo': RectTopo }
+</pre>
+
+<p>
+Then <code>sudo mn --custom  brectangle.py --topo recttopo --controller remote --switch ovsk --mac</code>
+</p>
+
+<p>
+Now if you do ping test from h1 to h2, you'll get destination host unreachable.
+Why? Controller was set to remote, there's no controller. Switch doesn't know how to deal with the packet right now.
+We need a controller like so:
+</p>
+
+<pre>
+                                     ┌─────────────────────┐
+                                     │                     │
+┌────────────────────────────────────┤     Controller      ├─────────────────────────────────────────┐
+│                                    │                     │                                         │
+│                                    └───┬───────────────┬─┘                                         │
+│      ┌─────────────┐        ┌──────────┴──┐        ┌───┴─────────┐      ┌─────────────┐            │
+│      │             │        │             │        │             │      │             │            │
+│      │  Host 1     ├────────┤  Switch 1   ├────────┤  Switch 2   ├──────┤  Host 2     │            │
+│      │             │        │             │        │             │      │             │            │
+│      └─────────────┘        └─────────────┘        └─────┬───────┘      └─────────────┘            │
+│                                                          │                                         │
+│      ┌─────────────┐        ┌─────────────┐        ┌─────┴───────┐      ┌─────────────┐            │
+│      │             │        │             │        │             │      │             │            │
+│      │  Host 4     ├────────┤  Switch 4   ├────────┤  Switch 3   ├──────┤  Host 3     │            │
+│      │             │        │             │        │             │      │             │            │
+│      └─────────────┘        └──────┬──────┘        └───────────┬─┘      └─────────────┘            │
+└────────────────────────────────────┘                           └───────────────────────────────────┘
+</pre>
+
+<p>
+Openflow controllers, there are a lot of them. We'll use POX here.
+</p>
+
+<p>
+<code>sudo ./pox.py --verbose forwarding.l2_pairs</code>
+</p>
+
+<p>
+Now you see that the hosts are connected, and if you do the ping test again, it'll reach the host.
+</p>
+
+<p>
+You can see what's going on in the switches now, specifically switch 1, with <code>sudo ovs-ofctl dump-flows s1</code>.
+</p>
+
+
+<p>
+Then restart everything.
+</p>
+
+<p>
+What happens if you <code>h1 ping h3</code>? You need to translate IP to MAC, using ARP.
+</p>
+
+<p>
+First, ARP request from h1 to s1.
+s1 forwards the packet to the controller.
+The controller learns port number of h1, then floods the packet on the network.
+Packet reaches s2, controller learns link of s2 where h1 is located.
+Then flooding continues.
+Reaches h2, h2 drops the packet.
+Reaches s3, controller learns port of s3 where h1 is located.
+Then flooded again.
+Once h3 gets it, h3 send back its MAC address, controller learns the port of s3 where h3 is located.
+Each switch gets flow rules installed on it based on this.
+</p>
+
+<p>
+Start the controller and mininet.
+Open up terminals with <code>xterm h3 h4</code>.
+Then run <code>tcpdump -n -i h3-eth0</code> and <code>tcpdump -n -i h4-eth0</code> in their respective xterms.
+Now you can check out the output and flow tables with <code>ovs-ofctl dump-flows</code> on each switch.
+</p>
+
+<p>
+We used a controller provided by POX. But how does it work?
+</p>
+
+<div id="Software Defined Networking-Programming with Mininet-Learning switch:"><h3 id="Learning switch:" class="header"><a href="#Software Defined Networking-Programming with Mininet-Learning switch:">Learning switch:</a></h3></div>
+<p>
+MAC address table, record mappings between MAC addresses and port numbers.
+SDN: maintain a table at the controller.
+</p>
+
+<p>
+Assignment - try to program a learning switch. Good C++/C exercise.
+</p>
+
+    </div>
+</body>
+</html>
